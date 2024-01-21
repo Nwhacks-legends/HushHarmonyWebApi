@@ -24,11 +24,20 @@ app.get('/', (req, res) => {
 // Example POST route for receiving data
 app.post('/collect-noise-data', async (req, res) => {
   try {
+    console.log(req.body)
     const noiseData = req.body['noise'];
     const longitude = req.body['long'];
     const latitude = req.body['lat'];
-    console.log(noiseData);
-    const userStore = await User.create({ long:longitude, lat:latitude, noise: noiseData });
+
+    let timestamp;
+    if(req.body.hasOwnProperty('timestamp')){
+      timestamp = new Date(req.body['timestamp']);
+    } else {
+      timestamp = Date.now();
+    }
+    
+    const userStore = await User.create({ long:longitude, lat:latitude, noise: noiseData, timestamp: timestamp });
+    console.log({ long:longitude, lat:latitude, noise: noiseData, timestamp: timestamp })
     res.status(200).send('Data received');
 
   } catch (error) {
