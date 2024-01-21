@@ -17,15 +17,32 @@ app.get('/', (req, res) => {
 });
 
 // Example POST route for receiving data
-app.post('/collect-noise-data', (req, res) => {
+app.post('/collect-noise-data', async (req, res) => {
   try {
-    const noiseData = req.body;
-    console.log(noiseData); // Process and store this data as needed
+    const noiseData = req.body['noise'];
+    const long = req.body['long'];
+    const lat = req.body['lat'];
+    console.log(noiseData);
+    const userStore = await User.create({ long, lat, noise: noiseData });
     res.status(200).send('Data received');
+
   } catch (error) {
     res.status(500).send('Error processing data');
   }
 });
+
+//GET user coordinates
+app.get("/get-sounds", async(req,res) => {
+  try{
+    const users = await User.find({})
+    res.send(200).json(users)
+
+  }
+  catch(error){
+    res.status(500).json({message: error.message})
+
+  }
+})
 
 
 app.listen(port, () => {
