@@ -20,14 +20,24 @@ app.get('/', (req, res) => {
 
 app.post('/collect-noise-data', async (req, res) => {
   try {
-    const { noise, long, lat } = req.body;
-    console.log(noise);
-    const userStore = await User.create({ long, lat, noise });
+    const noiseData = req.body['noise'];
+    const longitude = req.body['long'];
+    const latitude = req.body['lat'];
+
+    let timestamp;
+    if(req.body.hasOwnProperty('timestamp')){
+      timestamp = new Date(req.body['timestamp']);
+    } else {
+      timestamp = Date.now();
+    }
+    
+    const userStore = await User.create({ long:longitude, lat:latitude, noise: noiseData, timestamp: timestamp });
+    console.log("received:",{ long:longitude, lat:latitude, noise: noiseData, timestamp: timestamp })
     res.status(200).send('Data received');
 
     // Broadcast noise data to connected clients
     const io = socketService.getIO();
-    io.emit('newNoiseData', { long, lat, noise });
+    io.emit('newNoiseData', { long, lat, noise, timestamp });
 
   } catch (error) {
     res.status(500).send('Error processing data');
