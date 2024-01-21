@@ -17,7 +17,6 @@ function init(httpServer) {
             console.log('Client disconnected');
         });
 
-        // Additional event handlers can be added here
     });
 }
 

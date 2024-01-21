@@ -33,13 +33,16 @@ app.post('/collect-noise-data', async (req, res) => {
     
     const userStore = await User.create({ long:longitude, lat:latitude, noise: noiseData, timestamp: timestamp });
     console.log("received:",{ long:longitude, lat:latitude, noise: noiseData, timestamp: timestamp })
-    res.status(200).send('Data received');
 
     // Broadcast noise data to connected clients
     const io = socketService.getIO();
-    io.emit('newNoiseData', { long, lat, noise, timestamp });
+    io.emit('newNoiseData', { longitude, latitude, noiseData, timestamp });
+
+    
+    res.status(200).send('Data received');
 
   } catch (error) {
+    console.log(error);
     res.status(500).send('Error processing data');
   }
 });
