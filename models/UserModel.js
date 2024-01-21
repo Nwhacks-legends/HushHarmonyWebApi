@@ -1,9 +1,9 @@
 const mongoose = require("mongoose")
 
 const UserSchema = new mongoose.Schema({
-    long: Number,
-    lat: Number,
-    noise: Number,
+    long: {type: Number},
+    lat: {type: Number},
+    noise: {type: Number},
     timestamp: { type: Date, default: Date.now }
 
 })
