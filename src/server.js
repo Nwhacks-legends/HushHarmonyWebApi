@@ -1,54 +1,34 @@
 const express = require('express');
 const app = express();
 const port = process.env.PORT || 8080;
-const connectDB = require('./services/mongodb'); 
 
-
-require('dotenv').config();
+// In-memory data store
+const noiseDataStore = [];
 
 app.use(express.json());
-
+app.use(express.urlencoded({ extended: true }));
+// add cors
 const cors = require('cors');
 app.use(cors());
 
-
-connectDB();
-
-
-app.get('/', (req, res) => {
-  res.send('Noise Map Backend is running!');
-});
-
-// Example POST route for receiving data
-app.post('/collect-noise-data', async (req, res) => {
+// POST route to collect noise data
+app.post('/collect-noise-data', (req, res) => {
   try {
-    const noiseData = req.body['noise'];
-    const long = req.body['long'];
-    const lat = req.body['lat'];
-    console.log(noiseData);
-    const userStore = await User.create({ long, lat, noise: noiseData });
-    res.status(200).send('Data received');
-
+    const { noise, long, lat } = req.body;
+    noiseDataStore.push({ long, lat, noise });
+    console.log('Data stored in memory:', { long, lat, noise });
+    res.status(200).send('Data received and stored in memory');
   } catch (error) {
+    console.error('Error in /collect-noise-data:', error);
     res.status(500).send('Error processing data');
   }
 });
 
-//GET user coordinates
-app.get("/get-sounds", async(req,res) => {
-  try{
-    const users = await User.find({})
-    res.send(200).json(users)
-
-  }
-  catch(error){
-    res.status(500).json({message: error.message})
-
-  }
-})
-
+// Optional GET route to retrieve stored data
+app.get('/get-noise-data', (req, res) => {
+  res.status(200).json(noiseDataStore);
+});
 
 app.listen(port, () => {
   console.log(`Server is running on port ${port}`);
 });
-
