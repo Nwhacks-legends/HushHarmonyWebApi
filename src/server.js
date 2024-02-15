@@ -64,6 +64,18 @@ app.get("/get-sounds", async (req, res) => {
     res.status(500).json({ message: "Error fetching data" });
   }
 });
+
+app.delete("/clear-noise-data", async (req, res) => {
+  try {
+    // This will remove all documents from the collection
+    await User.deleteMany({});
+    res.status(200).send("All noise data cleared.");
+  } catch (error) {
+    console.error("Error clearing noise data:", error);
+    res.status(500).send("Error clearing noise data");
+  }
+});
+
 const port = process.env.PORT || 8080;
 server.listen(port, () => {
   console.log(`Server is running on port ${port}`);
